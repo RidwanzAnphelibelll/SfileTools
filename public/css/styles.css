@@ -390,9 +390,10 @@ body {
 
 .pagination {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
     margin-top: 30px;
     padding: 20px;
     background: white;
@@ -400,9 +401,17 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    gap: 20px;
+}
+
 .pagination-btn {
     padding: 10px 20px;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     color: white;
     border: none;
     border-radius: 8px;
@@ -413,9 +422,27 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: 1;
+    justify-content: center;
 }
 
-.pagination-btn:hover:not(:disabled) {
+#prev-btn {
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+#prev-btn:hover:not(:disabled) {
+    background: #f8f8f8;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+#next-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+}
+
+#next-btn:hover:not(:disabled) {
     background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
@@ -426,12 +453,14 @@ body {
     color: #999;
     cursor: not-allowed;
     transform: none;
+    border: 2px solid #e0e0e0;
 }
 
 .page-info {
     font-size: 14px;
     color: var(--text-color);
     font-weight: 600;
+    order: -1;
 }
 
 .no-results {
@@ -758,13 +787,15 @@ footer {
     }
 
     .pagination {
-        flex-direction: column;
         gap: 12px;
     }
 
+    .pagination-controls {
+        max-width: 100%;
+    }
+
     .pagination-btn {
-        width: 100%;
-        justify-content: center;
+        flex: 1;
     }
 
     .file-header {
@@ -844,6 +875,16 @@ footer {
 
     .result-item {
         padding: 16px;
+    }
+
+    .pagination-controls {
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .pagination-btn {
+        padding: 10px 16px;
+        font-size: 13px;
     }
 
     .file-header {
