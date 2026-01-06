@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="img/sfile.png" type="image/png">
+    <title>SfileTools - File Search & Download</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-nav">
+            <button class="hamburger-menu" id="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-menu" id="nav-menu">
+                <a href="https://github.com/RidwanzAnphelibelll/SfileTools" target="_blank">
+                    <i class="fab fa-github"></i>Github
+                </a>
+            </div>
+        </div>
+        <div class="header-content">
+            <h1>SfileTools</h1>
+            <p>File Search & Download</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tab-buttons">
+            <button class="tab-btn active" data-tab="file-search">
+                <i class="fas fa-search"></i> Search Files
+            </button>
+            <button class="tab-btn" data-tab="file-download">
+                <i class="fas fa-download"></i> Direct Download
+            </button>
+        </div>
+
+        <div class="tab-content active" id="file-search">
+            <div class="search-section" id="search-section">
+                <div class="search-box">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="file-search-input" placeholder="Enter search query" />
+                        <button type="button" id="clear-search" class="clear-btn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button id="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                <div class="search-results" id="search-results"></div>
+                <div class="pagination" id="pagination" style="display: none;">
+                    <button id="prev-btn" class="pagination-btn" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span id="page-info" class="page-info"></span>
+                    <button id="next-btn" class="pagination-btn" disabled>
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="loader" id="loader">
+                <div class="loader-spinner"></div>
+                <p>Loading...</p>
+            </div>
+
+            <div class="error-message" id="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Could Not Find Files</h3>
+                <p id="error-text">Unable to find the specified files</p>
+            </div>
+
+            <div class="file-container" id="file-container" style="display: none;">
+                <div class="file-header">
+                    <h1 class="file-title" id="file-name"></h1>
+                    <p class="file-subtitle">File Information</p>
+                </div>
+
+                <div class="file-main">
+                    <div class="file-specs">
+                        <ul class="file-specs-list" id="file-specs"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="file-download">
+            <div class="search-section">
+                <div class="search-box">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="download-input" placeholder="Enter Sfile URL (e.g., https://sfile.mobi/5je8kG2npKj)" />
+                        <button type="button" id="clear-download" class="clear-btn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button id="download-btn">
+                        <i class="fas fa-download"></i> Get Download Link
+                    </button>
+                </div>
+            </div>
+
+            <div class="loader" id="download-loader">
+                <div class="loader-spinner"></div>
+                <p>Getting download link...</p>
+            </div>
+
+            <div class="error-message" id="download-error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Download Failed</h3>
+                <p id="download-error-text">Unable to get download link</p>
+            </div>
+
+            <div class="file-container" id="download-result-container" style="display: none;">
+                <div class="file-header">
+                    <h1 class="file-title" id="download-file-name"></h1>
+                    <p class="file-subtitle">Download Information</p>
+                </div>
+
+                <div class="file-main">
+                    <div class="file-specs">
+                        <ul class="file-specs-list" id="download-specs"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="copyright">
+            <p>&copy; <span id="year"></span> SfileTools - All rights reserved</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
