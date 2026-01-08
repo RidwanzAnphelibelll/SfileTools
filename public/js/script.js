@@ -3,16 +3,25 @@ const API_BASE_URL = 'https://api-sfile-tools.vercel.app/';
 let currentTab = 'file-search';
 let currentPage = 1;
 let currentQuery = '';
+let currentSource = 'sfile';
 let totalPages = 1;
+let currentCookies = '';
 
 function handleSearch() {
     const searchInput = document.getElementById('file-search-input');
     const query = searchInput.value.trim();
+    const sourceRadios = document.querySelectorAll('input[name="search-source"]');
+    
+    sourceRadios.forEach(radio => {
+        if (radio.checked) {
+            currentSource = radio.value;
+        }
+    });
     
     if (query) {
         currentQuery = query;
         currentPage = 1;
-        searchFiles(query, currentPage);
+        searchFiles(query, currentPage, currentSource);
     } else {
         showError('Please enter a search query!');
     }
@@ -23,14 +32,16 @@ function handleDownload() {
     const url = downloadInput.value.trim();
     
     if (url) {
-        const sfileRegex = /^https:\/\/sfile\.mobi\/[a-zA-Z0-9]+$/;
-        if (!sfileRegex.test(url)) {
-            showDownloadError('Invalid URL provided!');
+        const sfileRegex = /^https:\/\/sfile\.mobi\/[a-zA-Z0-9]+\/?$/;
+        const simfileRegex = /^https:\/\/simfile\.co\/[a-zA-Z0-9]+\/?$/;
+        
+        if (!sfileRegex.test(url) && !simfileRegex.test(url)) {
+            showDownloadError('Invalid URL! Please enter a valid Sfile.mobi or Simfile.co URL.');
             return;
         }
         getDownloadLink(url);
     } else {
-        showDownloadError('Please enter a Sfile URL!');
+        showDownloadError('Please enter a Sfile or Simfile URL!');
     }
 }
 
@@ -50,6 +61,7 @@ function clearAll() {
     pagination.style.display = 'none';
     currentQuery = '';
     currentPage = 1;
+    currentCookies = '';
     searchInput.focus();
 }
 
@@ -63,10 +75,11 @@ function clearDownloadInput() {
     clearBtn.style.display = 'none';
     errorMessage.classList.remove('active');
     resultContainer.style.display = 'none';
+    currentCookies = '';
     downloadInput.focus();
 }
 
-function searchFiles(query, page) {
+function searchFiles(query, page, source) {
     const loader = document.getElementById('loader');
     const loaderText = loader.querySelector('p');
     const errorMessage = document.getElementById('error-message');
@@ -74,7 +87,7 @@ function searchFiles(query, page) {
     const fileContainer = document.getElementById('file-container');
     const pagination = document.getElementById('pagination');
     
-    loaderText.textContent = 'Searching for "' + query + '"...';
+    loaderText.textContent = 'Searching for "' + query + '" on ' + (source === 'sfile' ? 'Sfile.mobi' : 'Simfile.co') + '...';
     loader.classList.add('active');
     errorMessage.classList.remove('active');
     searchResults.classList.remove('active');
@@ -82,7 +95,7 @@ function searchFiles(query, page) {
     pagination.style.display = 'none';
     
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', API_BASE_URL + 'api/search?query=' + encodeURIComponent(query) + '&page=' + page, true);
+    xhr.open('GET', API_BASE_URL + 'api/search?query=' + encodeURIComponent(query) + '&page=' + page + '&source=' + source, true);
     
     xhr.onload = function() {
         loader.classList.remove('active');
@@ -130,15 +143,27 @@ function displaySearchResults(results, query, totalResults) {
         const item = document.createElement('div');
         item.className = 'result-item';
         
-        const fileUrl = file.url.replace(/^https?:\/\/sfile\.mobi/, '');
-        item.setAttribute('data-url', 'https://sfile.mobi' + fileUrl);
+        let fileUrl = file.url;
+        if (file.url.includes('sfile.mobi')) {
+            fileUrl = file.url.replace(/^https?:\/\/sfile\.mobi/, '');
+            item.setAttribute('data-url', 'https://sfile.mobi' + fileUrl);
+        } else {
+            item.setAttribute('data-url', file.url);
+        }
         
         if (file.icon) {
-            const icon = document.createElement('img');
-            icon.className = 'result-item-icon';
-            icon.src = file.icon;
-            icon.alt = 'File icon';
-            item.appendChild(icon);
+            if (file.icon.startsWith('<div')) {
+                const iconWrapper = document.createElement('div');
+                iconWrapper.className = 'result-item-icon';
+                iconWrapper.innerHTML = file.icon;
+                item.appendChild(iconWrapper);
+            } else {
+                const icon = document.createElement('img');
+                icon.className = 'result-item-icon';
+                icon.src = file.icon;
+                icon.alt = 'File icon';
+                item.appendChild(icon);
+            }
         }
         
         const name = document.createElement('div');
@@ -148,8 +173,16 @@ function displaySearchResults(results, query, totalResults) {
         
         const info = document.createElement('div');
         info.className = 'result-item-info';
-        info.innerHTML = '<div class="result-item-size">' + file.size + '</div>' +
-                        '<div class="result-item-date">' + file.date + '</div>';
+        
+        let infoHTML = '<div class="result-item-size">' + file.size + '</div>';
+        if (file.date) {
+            infoHTML += '<div class="result-item-date">' + file.date + '</div>';
+        }
+        if (file.downloads) {
+            infoHTML += '<div class="result-item-downloads">Downloads: ' + file.downloads + '</div>';
+        }
+        
+        info.innerHTML = infoHTML;
         item.appendChild(info);
         
         item.addEventListener('click', function() {
@@ -220,6 +253,9 @@ function getDownloadLink(url, callback) {
                 const data = JSON.parse(xhr.responseText);
                 
                 if (data.success && data.data) {
+                    if (data.cookies) {
+                        currentCookies = data.cookies;
+                    }
                     displayDownloadInfo(data.data, url);
                 } else {
                     if (currentTab === 'file-search') {
@@ -322,12 +358,21 @@ function displayDownloadInfo(data, sourceUrl) {
                       '</div>';
     specsContainer.appendChild(urlLi);
     
-    const downloadBtn = document.createElement('a');
-    downloadBtn.href = data.downloadUrl;
-    downloadBtn.className = 'download-button';
-    downloadBtn.target = '_blank';
-    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
-    specsContainer.appendChild(downloadBtn);
+    if (currentCookies && sourceUrl.includes('simfile.co')) {
+        const downloadBtn = document.createElement('a');
+        downloadBtn.href = API_BASE_URL + 'api/proxy-download?url=' + encodeURIComponent(data.downloadUrl) + '&cookies=' + encodeURIComponent(currentCookies);
+        downloadBtn.className = 'download-button';
+        downloadBtn.download = data.name;
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
+        specsContainer.appendChild(downloadBtn);
+    } else {
+        const downloadBtn = document.createElement('a');
+        downloadBtn.href = data.downloadUrl;
+        downloadBtn.className = 'download-button';
+        downloadBtn.target = '_blank';
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
+        specsContainer.appendChild(downloadBtn);
+    }
     
     container.style.display = 'block';
     window.scrollTo({ top: container.offsetTop - 20, behavior: 'smooth' });
@@ -399,14 +444,14 @@ document.addEventListener('DOMContentLoaded', function() {
     prevBtn.addEventListener('click', function() {
         if (currentPage > 1) {
             currentPage--;
-            searchFiles(currentQuery, currentPage);
+            searchFiles(currentQuery, currentPage, currentSource);
         }
     });
     
     nextBtn.addEventListener('click', function() {
         if (currentPage < totalPages) {
             currentPage++;
-            searchFiles(currentQuery, currentPage);
+            searchFiles(currentQuery, currentPage, currentSource);
         }
     });
     
