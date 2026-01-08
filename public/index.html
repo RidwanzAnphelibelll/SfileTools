@@ -40,6 +40,16 @@
 
         <div class="tab-content active" id="file-search">
             <div class="search-section" id="search-section">
+                <div class="source-selector">
+                    <label>
+                        <input type="radio" name="search-source" value="sfile" checked>
+                        <span>Sfile.mobi</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="search-source" value="simfile">
+                        <span>Simfile.co</span>
+                    </label>
+                </div>
                 <div class="search-box">
                     <div class="search-input-wrapper">
                         <input type="text" id="file-search-input" placeholder="Enter search query" />
@@ -94,7 +104,7 @@
             <div class="search-section">
                 <div class="search-box">
                     <div class="search-input-wrapper">
-                        <input type="text" id="download-input" placeholder="Enter Sfile URL" />
+                        <input type="text" id="download-input" placeholder="Enter Sfile or Simfile URL" />
                         <button type="button" id="clear-download" class="clear-btn" style="display: none;">
                             <i class="fas fa-times"></i>
                         </button>
