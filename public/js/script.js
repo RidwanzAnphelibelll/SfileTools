@@ -32,16 +32,16 @@ function handleDownload() {
     const url = downloadInput.value.trim();
     
     if (url) {
-        const sfileRegex = /^https:\/\/sfile\.mobi\/[a-zA-Z0-9]+\/?$/;
+        const sfileRegex = /^https:\/\/(sfile|sharefile)\.mobi\/[a-zA-Z0-9]+\/?$/;
         const simfileRegex = /^https:\/\/simfile\.co\/[a-zA-Z0-9]+\/?$/;
         
         if (!sfileRegex.test(url) && !simfileRegex.test(url)) {
-            showDownloadError('Invalid URL! Please enter a valid Sfile.mobi or Simfile.co URL.');
+            showDownloadError('Invalid URL! Please enter a valid Sfile.mobi, Sharefile.mobi or Simfile.co URL.');
             return;
         }
         getDownloadLink(url);
     } else {
-        showDownloadError('Please enter a Sfile or Simfile URL!');
+        showDownloadError('Please enter a Sfile, Sharefile or Simfile URL!');
     }
 }
 
@@ -147,6 +147,9 @@ function displaySearchResults(results, query, totalResults) {
         if (file.url.includes('sfile.mobi')) {
             fileUrl = file.url.replace(/^https?:\/\/sfile\.mobi/, '');
             item.setAttribute('data-url', 'https://sfile.mobi' + fileUrl);
+        } else if (file.url.includes('sharefile.mobi')) {
+            fileUrl = file.url.replace(/^https?:\/\/sharefile\.mobi/, '');
+            item.setAttribute('data-url', 'https://sharefile.mobi' + fileUrl);
         } else {
             item.setAttribute('data-url', file.url);
         }
@@ -364,6 +367,14 @@ function displayDownloadInfo(data, sourceUrl) {
         downloadBtn.className = 'download-button';
         downloadBtn.download = data.name;
         downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
+        specsContainer.appendChild(downloadBtn);
+    } else if (sourceUrl.includes('sfile.mobi') || sourceUrl.includes('sharefile.mobi')) {
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'download-button';
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
+        downloadBtn.addEventListener('click', function() {
+            window.location.href = data.downloadUrl;
+        });
         specsContainer.appendChild(downloadBtn);
     } else {
         const downloadBtn = document.createElement('a');
