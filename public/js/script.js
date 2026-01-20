@@ -360,10 +360,18 @@ function displayDownloadInfo(data, sourceUrl) {
     
     if (currentCookies && sourceUrl.includes('simfile.co')) {
         const downloadBtn = document.createElement('a');
-        downloadBtn.href = API_BASE_URL + 'api/proxy-download?url=' + encodeURIComponent(data.downloadUrl) + '&cookies=' + encodeURIComponent(currentCookies);
+        downloadBtn.href = API_BASE_URL + 'api/get-download?url=' + encodeURIComponent(data.downloadUrl) + '&cookies=' + encodeURIComponent(currentCookies);
         downloadBtn.className = 'download-button';
         downloadBtn.download = data.name;
         downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
+        specsContainer.appendChild(downloadBtn);
+    } else if (sourceUrl.includes('sfile.co')) {
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'download-button';
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
+        downloadBtn.onclick = function() {
+            window.location.href = data.downloadUrl;
+        };
         specsContainer.appendChild(downloadBtn);
     } else {
         const downloadBtn = document.createElement('a');
