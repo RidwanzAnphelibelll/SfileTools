@@ -32,16 +32,16 @@ function handleDownload() {
     const url = downloadInput.value.trim();
     
     if (url) {
-        const sfileRegex = /^https:\/\/(sfile|sharefile)\.mobi\/[a-zA-Z0-9]+\/?$/;
+        const sfileRegex = /^https:\/\/sfile\.co\/[a-zA-Z0-9]+\/?$/;
         const simfileRegex = /^https:\/\/simfile\.co\/[a-zA-Z0-9]+\/?$/;
         
         if (!sfileRegex.test(url) && !simfileRegex.test(url)) {
-            showDownloadError('Invalid URL! Please enter a valid Sfile.mobi, Sharefile.mobi or Simfile.co URL.');
+            showDownloadError('Invalid URL! Please enter a valid Sfile.co or Simfile.co URL.');
             return;
         }
         getDownloadLink(url);
     } else {
-        showDownloadError('Please enter a Sfile, Sharefile or Simfile URL!');
+        showDownloadError('Please enter a Sfile or Simfile URL!');
     }
 }
 
@@ -87,7 +87,7 @@ function searchFiles(query, page, source) {
     const fileContainer = document.getElementById('file-container');
     const pagination = document.getElementById('pagination');
     
-    loaderText.textContent = 'Searching for "' + query + '" on ' + (source === 'sfile' ? 'Sfile.mobi' : 'Simfile.co') + '...';
+    loaderText.textContent = 'Searching for "' + query + '" on ' + (source === 'sfile' ? 'Sfile.co' : 'Simfile.co') + '...';
     loader.classList.add('active');
     errorMessage.classList.remove('active');
     searchResults.classList.remove('active');
@@ -144,12 +144,9 @@ function displaySearchResults(results, query, totalResults) {
         item.className = 'result-item';
         
         let fileUrl = file.url;
-        if (file.url.includes('sfile.mobi')) {
-            fileUrl = file.url.replace(/^https?:\/\/sfile\.mobi/, '');
-            item.setAttribute('data-url', 'https://sfile.mobi' + fileUrl);
-        } else if (file.url.includes('sharefile.mobi')) {
-            fileUrl = file.url.replace(/^https?:\/\/sharefile\.mobi/, '');
-            item.setAttribute('data-url', 'https://sharefile.mobi' + fileUrl);
+        if (file.url.includes('sfile.co')) {
+            fileUrl = file.url.replace(/^https?:\/\/sfile\.co/, '');
+            item.setAttribute('data-url', 'https://sfile.co' + fileUrl);
         } else {
             item.setAttribute('data-url', file.url);
         }
@@ -367,14 +364,6 @@ function displayDownloadInfo(data, sourceUrl) {
         downloadBtn.className = 'download-button';
         downloadBtn.download = data.name;
         downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
-        specsContainer.appendChild(downloadBtn);
-    } else if (sourceUrl.includes('sfile.mobi') || sourceUrl.includes('sharefile.mobi')) {
-        const downloadBtn = document.createElement('button');
-        downloadBtn.className = 'download-button';
-        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
-        downloadBtn.addEventListener('click', function() {
-            window.location.href = data.downloadUrl;
-        });
         specsContainer.appendChild(downloadBtn);
     } else {
         const downloadBtn = document.createElement('a');
