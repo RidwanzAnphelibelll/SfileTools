@@ -6,6 +6,8 @@ let currentQuery = '';
 let currentSource = 'sfile';
 let totalPages = 1;
 let currentCookies = '';
+let searchResultsState = null;
+let scrollPosition = 0;
 
 function handleSearch() {
     const searchInput = document.getElementById('file-search-input');
@@ -62,6 +64,8 @@ function clearAll() {
     currentQuery = '';
     currentPage = 1;
     currentCookies = '';
+    searchResultsState = null;
+    scrollPosition = 0;
     searchInput.focus();
 }
 
@@ -106,6 +110,13 @@ function searchFiles(query, page, source) {
                 
                 if (data.success && data.data && data.data.length > 0) {
                     totalPages = data.pageCount;
+                    searchResultsState = {
+                        data: data.data,
+                        query: query,
+                        totalResults: data.totalResults,
+                        currentPage: data.currentPage,
+                        pageCount: data.pageCount
+                    };
                     displaySearchResults(data.data, query, data.totalResults);
                     updatePagination(data.currentPage, data.pageCount);
                 } else {
@@ -187,6 +198,8 @@ function displaySearchResults(results, query, totalResults) {
         
         item.addEventListener('click', function() {
             if (!item.classList.contains('loading')) {
+                scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+                
                 item.classList.add('loading');
                 
                 const loader = document.getElementById('loader');
@@ -293,6 +306,22 @@ function getDownloadLink(url, callback) {
     xhr.send();
 }
 
+function backToResults() {
+    if (searchResultsState) {
+        const fileContainer = document.getElementById('file-container');
+        const searchResults = document.getElementById('search-results');
+        const pagination = document.getElementById('pagination');
+        
+        fileContainer.style.display = 'none';
+        searchResults.classList.add('active');
+        pagination.style.display = 'flex';
+        
+        setTimeout(function() {
+            window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+        }, 100);
+    }
+}
+
 function copyToClipboard(text, button) {
     navigator.clipboard.writeText(text).then(function() {
         const originalHTML = button.innerHTML;
@@ -380,6 +409,16 @@ function displayDownloadInfo(data, sourceUrl) {
         downloadBtn.target = '_blank';
         downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
         specsContainer.appendChild(downloadBtn);
+    }
+    
+    if (currentTab === 'file-search' && searchResultsState) {
+        const backButton = document.createElement('button');
+        backButton.className = 'download-button';
+        backButton.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
+        backButton.style.marginTop = '20px';
+        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Results';
+        backButton.onclick = backToResults;
+        specsContainer.appendChild(backButton);
     }
     
     container.style.display = 'block';
@@ -503,6 +542,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     downloadInput.addEventListener('keypress', function(e) {
+    
         if (e.key === 'Enter') {
             handleDownload();
         }
