@@ -37,7 +37,6 @@ body {
     top: 0;
     z-index: 1000;
     box-shadow: var(--shadow-md);
-    backdrop-filter: blur(10px);
 }
 
 .header-content {
@@ -378,6 +377,12 @@ body {
     border-color: var(--primary-color);
     box-shadow: var(--shadow-lg);
     transform: translateY(-4px);
+}
+
+.result-item.clicked {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(29, 78, 216, 0.05));
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 .result-item.loading {
