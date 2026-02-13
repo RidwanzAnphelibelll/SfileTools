@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SfileTools - File search and download tools for Sfile.co and Simfile.co. Search and download files easily.">
     <link rel="icon" href="img/sfile.png" type="image/png">
     <title>SfileTools - File Search & Download</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -16,14 +17,19 @@
             <button class="hamburger-menu" id="hamburger-menu">
                 <i class="fas fa-bars"></i>
             </button>
+            
             <div class="nav-menu" id="nav-menu">
                 <a href="https://github.com/RidwanzAnphelibelll/SfileTools" target="_blank">
                     <i class="fab fa-github"></i>Github
                 </a>
             </div>
         </div>
+        
         <div class="header-content">
-            <h1>SfileTools</h1>
+            <h1>
+                <img src="img/sfile.png" alt="SfileTools" class="header-icon">
+                SfileTools
+            </h1>
             <p>File Search & Download</p>
         </div>
     </header>
@@ -46,10 +52,12 @@
                         <span>Sfile.co</span>
                     </label>
                     <label>
+                    
                         <input type="radio" name="search-source" value="simfile">
                         <span>Simfile.co</span>
                     </label>
                 </div>
+                
                 <div class="search-box">
                     <div class="search-input-wrapper">
                         <input type="text" id="file-search-input" placeholder="Enter search query" />
@@ -57,17 +65,21 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
+                    
                     <button id="search-btn">
                         <i class="fas fa-search"></i> Search
                     </button>
                 </div>
+                
                 <div class="search-results" id="search-results"></div>
                 <div class="pagination" id="pagination" style="display: none;">
                     <span id="page-info" class="page-info"></span>
                     <div class="pagination-controls">
+                    
                         <button id="prev-btn" class="pagination-btn" disabled>
                             <i class="fas fa-chevron-left"></i> Previous
                         </button>
+                        
                         <button id="next-btn" class="pagination-btn" disabled>
                             Next <i class="fas fa-chevron-right"></i>
                         </button>
@@ -109,6 +121,7 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
+                    
                     <button id="download-btn">
                         <i class="fas fa-download"></i> Get Download Link
                     </button>
