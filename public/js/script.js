@@ -8,6 +8,7 @@ let totalPages = 1;
 let currentCookies = '';
 let searchResultsState = null;
 let scrollPosition = 0;
+let clickedItemUrl = '';
 
 function handleSearch() {
     const searchInput = document.getElementById('file-search-input');
@@ -23,6 +24,7 @@ function handleSearch() {
     if (query) {
         currentQuery = query;
         currentPage = 1;
+        clickedItemUrl = '';
         searchFiles(query, currentPage, currentSource);
     } else {
         showError('Please enter a search query!');
@@ -66,6 +68,7 @@ function clearAll() {
     currentCookies = '';
     searchResultsState = null;
     scrollPosition = 0;
+    clickedItemUrl = '';
     searchInput.focus();
 }
 
@@ -162,19 +165,22 @@ function displaySearchResults(results, query, totalResults) {
             item.setAttribute('data-url', file.url);
         }
         
+        if (clickedItemUrl === item.getAttribute('data-url')) {
+            item.classList.add('clicked');
+        }
+        
         if (file.icon) {
+            const iconWrapper = document.createElement('div');
+            iconWrapper.className = 'result-item-icon';
             if (file.icon.startsWith('<div')) {
-                const iconWrapper = document.createElement('div');
-                iconWrapper.className = 'result-item-icon';
                 iconWrapper.innerHTML = file.icon;
-                item.appendChild(iconWrapper);
             } else {
                 const icon = document.createElement('img');
-                icon.className = 'result-item-icon';
                 icon.src = file.icon;
                 icon.alt = 'File icon';
-                item.appendChild(icon);
+                iconWrapper.appendChild(icon);
             }
+            item.appendChild(iconWrapper);
         }
         
         const name = document.createElement('div');
@@ -200,7 +206,15 @@ function displaySearchResults(results, query, totalResults) {
             if (!item.classList.contains('loading')) {
                 scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
                 
+                const allItems = document.querySelectorAll('.result-item');
+                allItems.forEach(function(i) {
+                    i.classList.remove('clicked');
+                });
+                
                 item.classList.add('loading');
+                item.classList.add('clicked');
+                
+                clickedItemUrl = item.getAttribute('data-url');
                 
                 const loader = document.getElementById('loader');
                 const loaderText = loader.querySelector('p');
@@ -415,7 +429,7 @@ function displayDownloadInfo(data, sourceUrl) {
         const backButton = document.createElement('button');
         backButton.className = 'download-button';
         backButton.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
-        backButton.style.marginTop = '20px';
+        backButton.style.marginTop = '10px';
         backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Results';
         backButton.onclick = backToResults;
         specsContainer.appendChild(backButton);
@@ -542,7 +556,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     downloadInput.addEventListener('keypress', function(e) {
-    
         if (e.key === 'Enter') {
             handleDownload();
         }
